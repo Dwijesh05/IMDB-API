@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 
 const MovieDetails = ({ movieData, onClose }) => {
-  // Lock body scroll while component is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -23,7 +22,6 @@ const MovieDetails = ({ movieData, onClose }) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
   };
 
-  // 1. Extract & clean primaryImage URL (removes Amazon crop modifiers to prevent 404s)
   const rawPrimaryImage = typeof movie?.primaryImage === 'string' 
     ? movie.primaryImage 
     : movie?.primaryImage?.url || movie?.thumbnails?.[1]?.url || movie?.thumbnails?.[0]?.url;
@@ -32,7 +30,6 @@ const MovieDetails = ({ movieData, onClose }) => {
     ? rawPrimaryImage.replace(/\._V1_.*?\.(jpg|jpeg|png)$/i, '.$1') 
     : 'https://via.placeholder.com/300x450?text=No+Poster';
 
-  // 2. Construct official IMDb Web URL directly using movie ID
   const titleId = movie?.id || movie?.imdbId || movie?.tconst;
   const imdbWebUrl = titleId ? `https://www.imdb.com/title/${titleId}/` : null;
 
@@ -44,7 +41,6 @@ const MovieDetails = ({ movieData, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 bg-gray-950 text-white flex flex-col overflow-y-auto animate-fadeIn">
       
-      {/* CLOSE BUTTON */}
       <button
         onClick={onClose}
         className="fixed top-6 right-6 z-50 p-3 bg-black/80 hover:bg-yellow-400 hover:text-black text-white rounded-full transition-all cursor-pointer border border-yellow-400 shadow-2xl"
@@ -53,10 +49,8 @@ const MovieDetails = ({ movieData, onClose }) => {
         <X size={24} />
       </button>
 
-      {/* ================= HERO BANNER ================= */}
       <div className="relative w-full h-[60vh] min-h-[450px] bg-black border-b-2 border-yellow-400 flex items-end overflow-hidden">
         
-        {/* HERO BACKGROUND IMAGE (USES PRIMARY IMAGE) */}
         <div className="absolute inset-0 z-0">
           <img 
             src={primaryPoster} 
@@ -70,10 +64,8 @@ const MovieDetails = ({ movieData, onClose }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-black/30" />
         </div>
 
-        {/* HERO OVERLAY CONTENT */}
         <div className="relative z-20 w-full max-w-6xl mx-auto px-6 pb-8 flex flex-col md:flex-row gap-6 items-center md:items-end">
-          
-          {/* FOREGROUND POSTER BADGE (USES PRIMARY IMAGE) */}
+
           <img 
             src={primaryPoster} 
             alt={title} 
@@ -113,7 +105,7 @@ const MovieDetails = ({ movieData, onClose }) => {
               </p>
             )}
 
-            {/* INTERESTS */}
+
             {movie.interests && movie.interests.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {movie.interests.map((interest, idx) => (
@@ -128,13 +120,10 @@ const MovieDetails = ({ movieData, onClose }) => {
         </div>
       </div>
 
-      {/* ================= DETAILS CONTAINER ================= */}
       <div className="w-full max-w-6xl mx-auto px-6 py-10 space-y-10 flex-grow">
-        
-        {/* HIGHLIGHT STATS BAR */}
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-900/80 p-5 rounded-2xl border border-gray-800 shadow-lg">
-          
-          {/* IMDb Rating */}
+
           <div className="flex items-center gap-3">
             <div className="p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-xl text-yellow-400">
               <Star size={24} className="fill-yellow-400" />
@@ -149,7 +138,6 @@ const MovieDetails = ({ movieData, onClose }) => {
             </div>
           </div>
 
-          {/* Release Year */}
           <div className="flex items-center gap-3">
             <div className="p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-xl text-yellow-400">
               <Calendar size={24} />
@@ -162,7 +150,6 @@ const MovieDetails = ({ movieData, onClose }) => {
             </div>
           </div>
 
-          {/* Runtime */}
           <div className="flex items-center gap-3">
             <div className="p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-xl text-yellow-400">
               <Clock size={24} />
@@ -175,7 +162,6 @@ const MovieDetails = ({ movieData, onClose }) => {
             </div>
           </div>
 
-          {/* Box Office Gross */}
           <div className="flex items-center gap-3">
             <div className="p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-xl text-yellow-400">
               <DollarSign size={24} />
@@ -192,13 +178,10 @@ const MovieDetails = ({ movieData, onClose }) => {
 
         </div>
 
-        {/* TWO COLUMN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           
-          {/* LEFT 2 COLUMNS */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* OVERVIEW */}
             <div className="space-y-3">
               <h2 className="text-2xl font-bold text-yellow-400 border-l-4 border-yellow-400 pl-3">
                 Overview & Synopsis
@@ -208,13 +191,12 @@ const MovieDetails = ({ movieData, onClose }) => {
               </p>
             </div>
 
-            {/* PRODUCTION & LOCATION */}
             {(movie.filmingLocations?.[0] || movie.productionCompanies?.[0]?.name) && (
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-yellow-400 border-l-4 border-yellow-400 pl-3">
                   Production & Location
                 </h3>
-                
+                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {movie.filmingLocations?.[0] && (
                     <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-start gap-3">
@@ -245,10 +227,8 @@ const MovieDetails = ({ movieData, onClose }) => {
 
           </div>
 
-          {/* RIGHT COLUMN */}
           <div className="space-y-8">
-            
-            {/* GENRES */}
+
             {movie.genres && movie.genres.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-lg font-bold text-yellow-400">Genres</h3>
@@ -262,7 +242,6 @@ const MovieDetails = ({ movieData, onClose }) => {
               </div>
             )}
 
-            {/* SPECS */}
             <div className="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 space-y-4">
               <h3 className="text-base font-bold text-yellow-400 border-b border-gray-800 pb-2">
                 Movie Specs
@@ -295,13 +274,11 @@ const MovieDetails = ({ movieData, onClose }) => {
               </div>
             </div>
 
-            {/* EXTERNAL LINKS */}
             {(imdbWebUrl || (movie.externalLinks && movie.externalLinks.length > 0)) && (
               <div className="space-y-3">
                 <h3 className="text-lg font-bold text-yellow-400">External Links</h3>
                 <div className="flex flex-col gap-2">
-                  
-                  {/* DIRECT OFFICIAL IMDB LINK */}
+
                   {imdbWebUrl && (
                     <a 
                       href={imdbWebUrl} 
@@ -314,7 +291,6 @@ const MovieDetails = ({ movieData, onClose }) => {
                     </a>
                   )}
 
-                  {/* OTHER EXTERNAL LINKS FROM API */}
                   {movie.externalLinks?.map((link, idx) => (
                     <a 
                       key={idx}

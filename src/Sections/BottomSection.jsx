@@ -14,7 +14,6 @@ const BottomSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Track full selected movie object for instant modal rendering
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
@@ -45,8 +44,7 @@ const BottomSection = () => {
 
   return (
     <div className="flex flex-col space-y-4 pb-12">
-      
-      {/* Loading State */}
+
       {loading && (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
@@ -54,14 +52,12 @@ const BottomSection = () => {
         </div>
       )}
 
-      {/* Error State */}
       {error && !loading && (
         <div className="text-center py-6 text-red-400 font-semibold text-sm">
           {error}
         </div>
       )}
 
-      {/* Bottom Section Rows */}
       {!loading && (
         <>
           <MovieRow 
@@ -82,7 +78,6 @@ const BottomSection = () => {
         </>
       )}
 
-      {/* Render Modal instantly using full movie object */}
       {selectedMovie && (
         <MovieDetails 
           movieData={selectedMovie} 

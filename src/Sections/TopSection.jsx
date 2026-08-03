@@ -12,7 +12,6 @@ const TopSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Track full selected movie object for instant modal rendering
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const TopSection = () => {
 
   return (
     <div className="text-white pb-6">
-      {/* Hero Header */}
       <div className="flex flex-col items-center m-5 p-8 text-center">
         <h1 className="text-6xl font-extrabold">Stop Scrolling.</h1>
         <h1 className="text-6xl font-extrabold mt-1">
@@ -52,7 +50,6 @@ const TopSection = () => {
         </h2>
       </div>
 
-      {/* Loading State */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
@@ -60,14 +57,12 @@ const TopSection = () => {
         </div>
       )}
 
-      {/* Error State */}
       {error && !loading && (
         <div className="text-center py-6 text-red-400 font-semibold text-sm">
           {error}
         </div>
       )}
 
-      {/* Top Section Rows */}
       {!loading && (
         <div className="flex flex-col space-y-4">
           <MovieRow 
@@ -83,7 +78,6 @@ const TopSection = () => {
         </div>
       )}
 
-      {/* Render Modal instantly using full movie object */}
       {selectedMovie && (
         <MovieDetails 
           movieData={selectedMovie} 
