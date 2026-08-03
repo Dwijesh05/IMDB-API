@@ -38,7 +38,6 @@ const SignUp = () => {
       return;
     }
 
-    // Generate fallback avatar based on user's name
     const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=facc15&color=000000&bold=true`;
 
     const newUser = {
@@ -48,10 +47,8 @@ const SignUp = () => {
       avatar: avatar
     };
 
-    // Save updated users list to localStorage
     localStorage.setItem('registered_users', JSON.stringify([...existingUsers, newUser]));
 
-    // Redirect user to LogIn page
     navigate('/login');
   };
 

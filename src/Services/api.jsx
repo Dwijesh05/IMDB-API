@@ -123,3 +123,31 @@ export const getMostPopularTVShows = async () => {
     return [];
   }
 };
+
+export const getAutocompleteSuggestions = async (query) => {
+  if (!query || query.trim() === '') return [];
+  try {
+    const response = await apiInstance.get(`/api/imdb/autocomplete`, {
+      params: { query: query.trim() }
+    });
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching autocomplete suggestions:', error);
+    return [];
+  }
+};
+
+// Full Search with filters (for results page or custom queries)
+export const searchMovies = async ({ query = '', type = 'movie', genre = '', rows = 25 }) => {
+  try {
+    const params = { type, rows, sortOrder: 'ASC', sortField: 'id' };
+    if (query) params.query = query;
+    if (genre) params.genre = genre;
+
+    const response = await apiInstance.get(`/api/imdb/search`, { params });
+    return response.data || [];
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    return [];
+  }
+};
