@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronDown, ChevronUp } from 'lucide-react'; 
+import { ChevronUp, ChevronDown } from 'lucide-react'; 
 import Navbar from '../Components/Navbar';
 import MovieDetails from '../Components/MovieDetails';
 import { 
@@ -9,7 +9,8 @@ import {
   getTopRatedEnglish, 
   getTopBoxOfficeUS, 
   getMostPopularMovies, 
-  getMostPopularTVShows 
+  getMostPopularTVShows,
+  searchMovies 
 } from '../Services/api';
 
 const Results = () => {
@@ -21,51 +22,62 @@ const Results = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State to track which movie's details modal is active
-  const [selectedMovieId, setSelectedMovieId] = useState(null);
+  // Track selected movie object for modal
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   // Pagination state
   const [page, setPage] = useState(0);
   const itemsPerPage = 12;
 
-  // 1. Fetch exact API depending on clicked dropdown button
+  // 1. Fetch exact API depending on type and query
   useEffect(() => {
     const fetchCategoryData = async () => {
       setLoading(true);
-      setPage(0); // Reset page to 0 when category changes
+      setPage(0); // Reset page to 0 when category/query changes
 
       let data = [];
-      switch (query) {
-        case 'Top Rated Telugu Movies':
-          data = await getTopRatedTelugu();
-          break;
-        case 'Top Rated Indian Movies':
-          data = await getTopRatedIndian();
-          break;
-        case 'Top Rated English Movies':
-          data = await getTopRatedEnglish();
-          break;
-        case 'Top Box Office (US)':
-          data = await getTopBoxOfficeUS();
-          break;
-        case 'Most Popular Movies':
-          data = await getMostPopularMovies();
-          break;
-        case 'Most Popular TV Shows':
-          data = await getMostPopularTVShows();
-          break;
-        default:
-          data = await getMostPopularMovies();
+      try {
+        // 🔍 HANDLE TYPE === 'search' WHEN ENTER IS PRESSED
+        if (type === 'search') {
+          data = await searchMovies({ query });
+        } else {
+          switch (query) {
+            case 'Top Rated Telugu Movies':
+              data = await getTopRatedTelugu();
+              break;
+            case 'Top Rated Indian Movies':
+              data = await getTopRatedIndian();
+              break;
+            case 'Top Rated English Movies':
+              data = await getTopRatedEnglish();
+              break;
+            case 'Top Box Office (US)':
+              data = await getTopBoxOfficeUS();
+              break;
+            case 'Most Popular Movies':
+              data = await getMostPopularMovies();
+              break;
+            case 'Most Popular TV Shows':
+              data = await getMostPopularTVShows();
+              break;
+            default:
+              data = await getMostPopularMovies();
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching results:", err);
+        data = [];
       }
 
-      setMovies(data);
+      // 🛡️ Guarantee movies is always an array
+      setMovies(Array.isArray(data) ? data : []);
       setLoading(false);
     };
 
     fetchCategoryData();
-  }, [query]);
+  }, [query, type]); // 👈 Added both query and type as dependencies
 
-  // 2. Dynamic Pagination based on API response length
+  // Dynamic Pagination based on API response length
   const totalItems = movies.length;
   const maxPage = Math.max(0, Math.ceil(totalItems / itemsPerPage) - 1);
 
@@ -83,14 +95,14 @@ const Results = () => {
   return (
     <div className='h-screen bg-gray-900 flex flex-col text-white overflow-hidden w-full'>
         
-        <div className='shrink-0'>
+        <div className='shrink-0 z-40'>
             <Navbar />
         </div>
         
-        <div className='flex-grow flex flex-col justify-between px-5 py-2 min-h-0 overflow-hidden w-full'>
+        <div className='flex-grow flex flex-col justify-between px-5 py-2 min-h-0 overflow-hidden w-full relative'>
 
             {/* TITLE */}
-            <h1 className='text-xl md:text-2xl font-bold shrink-0'>
+            <h1 className='text-xl md:text-2xl font-bold shrink-0 my-2'>
                 {type === 'category' ? (
                     <span className='text-yellow-400'>{query}</span>
                 ) : (
@@ -98,72 +110,89 @@ const Results = () => {
                 )}
             </h1>
 
-            {/* MOVIE GRID */}
-            <div className='flex-grow flex items-center justify-center min-h-0 w-full my-1'>
+            {/* MOVIE GRID CONTAINER */}
+            <div className='flex-grow flex items-center justify-center min-h-0 w-full my-1 relative'>
+                
+                {/* FLOATING PREVIOUS BUTTON */}
+                {page > 0 && !loading && (
+                    <button 
+                        onClick={handlePrev}
+                        aria-label="Previous Page"
+                        className='absolute left-2 top-1/2 -translate-y-1/2 z-50 p-3 text-yellow-400 hover:text-white bg-black/80 hover:bg-black transition-all duration-300 hover:scale-110 cursor-pointer rounded-full border border-yellow-400/50 shadow-2xl backdrop-blur-sm'
+                    >
+                        <ChevronUp size={30} strokeWidth={2.5} className="-rotate-90" />
+                    </button>
+                )}
+
+                {/* GRID CONTENT */}
                 {loading ? (
                     <div className='text-yellow-400 font-semibold text-lg animate-pulse'>
                         Loading movies...
                     </div>
                 ) : currentMovies.length > 0 ? (
-                    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-h-full'>
-                        {currentMovies.map((movie, index) => (
-                            <div 
-                                key={movie.id || index} 
-                                onClick={() => setSelectedMovieId(movie.id)}
-                                className='bg-gray-800 border border-gray-700 aspect-video w-full rounded-lg flex flex-col items-center justify-center hover:scale-105 hover:border-yellow-400 transition-all duration-300 cursor-pointer shadow-lg overflow-hidden relative group'
-                            >
-                                {movie.primaryImage ? (
-                                    <img 
-                                        src={movie.primaryImage} 
-                                        alt={movie.primaryTitle || 'Movie'} 
-                                        className='w-full h-full object-cover'
-                                    />
-                                ) : (
-                                    <span className='text-gray-400 font-semibold text-sm px-2 text-center'>
-                                        {movie.primaryTitle || `Movie ${page * itemsPerPage + index + 1}`}
-                                    </span>
-                                )}
+                    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-h-full overflow-y-auto p-1'>
+                        {currentMovies.map((movie, index) => {
+                            // Extract clean poster image string safely
+                            const rawPoster = 
+                              typeof movie.primaryImage === 'string' ? movie.primaryImage :
+                              movie.primaryImage?.url || 
+                              movie.thumbnails?.[0]?.url;
 
-                                {/* Movie Title Overlay on Hover */}
-                                <div className='absolute bottom-0 inset-x-0 bg-black/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity text-center text-xs font-bold text-yellow-400 truncate'>
-                                    {movie.primaryTitle}
-                                </div>
-                            </div>
-                        ))}
+                            const posterUrl = rawPoster 
+                              ? rawPoster.replace(/\._V1_.*?\.(jpg|jpeg|png)$/i, '.$1') 
+                              : 'https://via.placeholder.com/300x450?text=No+Poster';
+
+                            const title = movie.primaryTitle || movie.title || `Movie ${page * itemsPerPage + index + 1}`;
+
+                            return (
+                              <div 
+                                  key={movie.id || index} 
+                                  onClick={() => setSelectedMovie(movie)}
+                                  className='bg-gray-800 border border-gray-700 aspect-video w-full rounded-lg flex flex-col items-center justify-center hover:scale-105 hover:border-yellow-400 transition-all duration-300 cursor-pointer shadow-lg overflow-hidden relative group z-10'
+                              >
+                                  <img 
+                                      src={posterUrl} 
+                                      alt={title} 
+                                      className='w-full h-full object-cover'
+                                      onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = 'https://via.placeholder.com/300x450?text=No+Poster';
+                                      }}
+                                  />
+
+                                  {/* Movie Title Overlay on Hover */}
+                                  <div className='absolute bottom-0 inset-x-0 bg-black/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity text-center text-xs font-bold text-yellow-400 truncate'>
+                                      {title}
+                                  </div>
+                              </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className='text-gray-400 text-lg'>No movies found.</div>
                 )}
-            </div>   
 
-            {/* PAGINATION CONTROLS */}
-            <div className='flex justify-center items-center gap-6 shrink-0 h-12 pb-1'>
-                {page > 0 && (
-                    <button 
-                        onClick={handlePrev}
-                        className='p-2 text-gray-400 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-gray-800 rounded-full border border-gray-700 shadow-md'
-                    >
-                        <ChevronUp size={30} strokeWidth={2.5} />
-                    </button>
-                )}
-
-                {page < maxPage && (
+                {/* FLOATING NEXT BUTTON */}
+                {page < maxPage && !loading && (
                     <button 
                         onClick={handleNext}
-                        className='p-2 text-gray-400 hover:text-yellow-400 transition-all duration-300 hover:translate-y-1 cursor-pointer bg-gray-800 rounded-full border border-gray-700 shadow-md'
+                        aria-label="Next Page"
+                        className='absolute right-2 top-1/2 -translate-y-1/2 z-50 p-3 text-yellow-400 hover:text-white bg-black/80 hover:bg-black transition-all duration-300 hover:scale-110 cursor-pointer rounded-full border border-yellow-400/50 shadow-2xl backdrop-blur-sm'
                     >
-                        <ChevronDown size={30} strokeWidth={2.5} />
+                        <ChevronDown size={30} strokeWidth={2.5} className="-rotate-90" />
                     </button>
                 )}
-            </div>
+
+            </div> 
 
         </div>
 
-        {/* DETAILS MODAL */}
-        {selectedMovieId && (
+        {/* DETAILS MODAL - Passes both object and ID to guarantee compatibility */}
+        {selectedMovie && (
           <MovieDetails
-            movieId={selectedMovieId} 
-            onClose={() => setSelectedMovieId(null)} 
+            movieData={selectedMovie}
+            movieId={selectedMovie.id} 
+            onClose={() => setSelectedMovie(null)} 
           />
         )}
     </div>
