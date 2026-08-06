@@ -4,11 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false); // Category dropdown
-  const [showProfileMenu, setShowProfileMenu] = useState(false); // User profile dropdown
+  const [isOpen, setIsOpen] = useState(false); 
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Check localStorage for logged-in user session
   useEffect(() => {
     const savedUser = localStorage.getItem('current_user');
     if (savedUser) {
@@ -25,8 +24,6 @@ const Navbar = () => {
 
   return (
     <div className='flex justify-between items-center p-4 bg-gray-900 border-b border-gray-800 text-white relative z-40'>
-      
-      {/* 1. CATEGORIES DROPDOWN */}
       <div className='relative'>
         <button 
           onClick={() => {
@@ -94,7 +91,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* 2. LOGO */}
       <div className='flex gap-2 text-white items-center'>
         <Clapperboard size={30} className="text-yellow-400" />
         <h2 className='text-2xl font-bold'>
@@ -104,7 +100,6 @@ const Navbar = () => {
         </h2>
       </div>
 
-      {/* 3. SEARCH & USER PROFILE / LOGIN */}
       <div className='flex gap-4 items-center text-white'>
         <Link 
           to='/search' 
@@ -115,7 +110,6 @@ const Navbar = () => {
         </Link>
 
         {currentUser ? (
-          /* LOGGED IN: PROFILE AVATAR & DROPDOWN */
           <div className="relative">
             <button
               onClick={() => {
@@ -134,7 +128,6 @@ const Navbar = () => {
               </span>
             </button>
 
-            {/* Profile Dropdown */}
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl py-2 z-50 animate-fadeIn">
                 <div className="px-4 py-2 border-b border-gray-700">
@@ -153,7 +146,6 @@ const Navbar = () => {
             )}
           </div>
         ) : (
-          /* LOGGED OUT: LOGIN / SIGNUP LINK */
           <Link 
             to="/login" 
             className='bg-yellow-400 text-black font-extrabold px-4 py-2 rounded-xl text-sm hover:bg-yellow-300 transition-all'

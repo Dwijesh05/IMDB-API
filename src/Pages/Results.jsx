@@ -18,26 +18,24 @@ const Results = () => {
   const query = searchParams.get('q') || 'All Movies';
   const type = searchParams.get('type'); 
 
-  // States for API data & loading
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Track selected movie object for modal
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  // Pagination state
+
   const [page, setPage] = useState(0);
   const itemsPerPage = 12;
 
-  // 1. Fetch exact API depending on type and query
+
   useEffect(() => {
     const fetchCategoryData = async () => {
       setLoading(true);
-      setPage(0); // Reset page to 0 when category/query changes
+      setPage(0); 
 
       let data = [];
       try {
-        // 🔍 HANDLE TYPE === 'search' WHEN ENTER IS PRESSED
+        
         if (type === 'search') {
           data = await searchMovies({ query });
         } else {
@@ -69,19 +67,16 @@ const Results = () => {
         data = [];
       }
 
-      // 🛡️ Guarantee movies is always an array
       setMovies(Array.isArray(data) ? data : []);
       setLoading(false);
     };
 
     fetchCategoryData();
-  }, [query, type]); // 👈 Added both query and type as dependencies
+  }, [query, type]);
 
-  // Dynamic Pagination based on API response length
   const totalItems = movies.length;
   const maxPage = Math.max(0, Math.ceil(totalItems / itemsPerPage) - 1);
 
-  // Slice actual API movies array for current page
   const currentMovies = movies.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
   const handlePrev = () => {
@@ -101,7 +96,6 @@ const Results = () => {
         
         <div className='flex-grow flex flex-col justify-between px-5 py-2 min-h-0 overflow-hidden w-full relative'>
 
-            {/* TITLE */}
             <h1 className='text-xl md:text-2xl font-bold shrink-0 my-2'>
                 {type === 'category' ? (
                     <span className='text-yellow-400'>{query}</span>
@@ -110,10 +104,8 @@ const Results = () => {
                 )}
             </h1>
 
-            {/* MOVIE GRID CONTAINER */}
             <div className='flex-grow flex items-center justify-center min-h-0 w-full my-1 relative'>
                 
-                {/* FLOATING PREVIOUS BUTTON */}
                 {page > 0 && !loading && (
                     <button 
                         onClick={handlePrev}
@@ -124,7 +116,6 @@ const Results = () => {
                     </button>
                 )}
 
-                {/* GRID CONTENT */}
                 {loading ? (
                     <div className='text-yellow-400 font-semibold text-lg animate-pulse'>
                         Loading movies...
@@ -132,7 +123,7 @@ const Results = () => {
                 ) : currentMovies.length > 0 ? (
                     <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-h-full overflow-y-auto p-1'>
                         {currentMovies.map((movie, index) => {
-                            // Extract clean poster image string safely
+                            
                             const rawPoster = 
                               typeof movie.primaryImage === 'string' ? movie.primaryImage :
                               movie.primaryImage?.url || 
@@ -160,7 +151,7 @@ const Results = () => {
                                       }}
                                   />
 
-                                  {/* Movie Title Overlay on Hover */}
+                                  
                                   <div className='absolute bottom-0 inset-x-0 bg-black/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity text-center text-xs font-bold text-yellow-400 truncate'>
                                       {title}
                                   </div>
@@ -172,7 +163,7 @@ const Results = () => {
                     <div className='text-gray-400 text-lg'>No movies found.</div>
                 )}
 
-                {/* FLOATING NEXT BUTTON */}
+              
                 {page < maxPage && !loading && (
                     <button 
                         onClick={handleNext}
@@ -187,7 +178,7 @@ const Results = () => {
 
         </div>
 
-        {/* DETAILS MODAL - Passes both object and ID to guarantee compatibility */}
+       
         {selectedMovie && (
           <MovieDetails
             movieData={selectedMovie}

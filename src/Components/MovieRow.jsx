@@ -39,7 +39,6 @@ const MovieRow = ({ title, movies = [], onMovieClick }) => {
 
       <div className="relative">
 
-        {/* SCROLL LEFT BUTTON */}
         {canScrollLeft && (
           <button
             onClick={scrollLeft}
@@ -50,14 +49,13 @@ const MovieRow = ({ title, movies = [], onMovieClick }) => {
           </button>
         )}
 
-        {/* HORIZONTAL MOVIE SCROLLER */}
+ 
         <div
           ref={scrollRef}
           onScroll={checkScrollPosition}
           className="ml-4 mr-4 gap-4 flex flex-row overflow-x-auto py-4 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {movies.map((movie, index) => {
-            // Extract primaryImage URL & strip Amazon crop/resize parameters to avoid 404s
             const rawPoster = 
               typeof movie.primaryImage === 'string' ? movie.primaryImage :
               movie.primaryImage?.url || 
@@ -74,7 +72,7 @@ const MovieRow = ({ title, movies = [], onMovieClick }) => {
             return (
               <div
                 key={movie.id || index}
-                onClick={() => onMovieClick && onMovieClick(movie)} // Pass entire movie object to parent state
+                onClick={() => onMovieClick && onMovieClick(movie)} 
                 className="bg-gray-800 border border-gray-700 aspect-[2/3] rounded-lg overflow-hidden relative group/card hover:border-yellow-400 hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg w-[42%] sm:w-[28%] md:w-[21%] lg:w-[16%] xl:w-[12.8%] shrink-0"
               >
                 <img 
@@ -87,7 +85,6 @@ const MovieRow = ({ title, movies = [], onMovieClick }) => {
                   }}
                 />
 
-                {/* HOVER OVERLAY CARD */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 p-3 flex flex-col justify-end">
                   <span className="text-white font-bold text-sm line-clamp-2 drop-shadow">
                     {displayTitle}
@@ -105,7 +102,6 @@ const MovieRow = ({ title, movies = [], onMovieClick }) => {
           })}
         </div>
 
-        {/* SCROLL RIGHT BUTTON */}
         {canScrollRight && (
           <button
             onClick={scrollRight}

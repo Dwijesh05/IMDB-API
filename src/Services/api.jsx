@@ -137,7 +137,6 @@ export const getAutocompleteSuggestions = async (query) => {
   }
 };
 
-// Full Search with filters (for results page or custom queries)
 export const searchMovies = async ({ query = '', type = 'movie', genre = '', rows = 25 }) => {
   try {
     const params = { type, rows, sortOrder: 'ASC', sortField: 'id' };
@@ -151,3 +150,41 @@ export const searchMovies = async ({ query = '', type = 'movie', genre = '', row
     return [];
   }
 };
+
+// export const searchMovies = async ({ query = '', type = 'movie', genre = '', rows = 25 }) => {
+//   try {
+//     // 1. Handle text search using the working Autocomplete endpoint
+//     if (query && query.trim() !== '') {
+//       const response = await apiInstance.get(`/api/imdb/autocomplete`, {
+//         params: { query: query.trim() }
+//       });
+      
+//       const res = response.data;
+
+//       // Extract array from whichever property the API returns it under
+//       if (Array.isArray(res)) return res;
+//       if (Array.isArray(res?.data)) return res.data;
+//       if (Array.isArray(res?.results)) return res.results;
+//       if (Array.isArray(res?.d)) return res.d;
+
+//       return [];
+//     }
+
+//     // 2. Handle genre or category filtering
+//     const params = { rows, sortOrder: 'DESC', sortField: 'id' };
+//     if (type) params.type = type;
+//     if (genre) params.genre = genre;
+
+//     const response = await apiInstance.get(`/api/imdb/search`, { params });
+//     const res = response.data;
+
+//     if (Array.isArray(res)) return res;
+//     if (Array.isArray(res?.data)) return res.data;
+//     if (Array.isArray(res?.results)) return res.results;
+
+//     return [];
+//   } catch (error) {
+//     console.error('Error searching movies:', error);
+//     return [];
+//   }
+// };

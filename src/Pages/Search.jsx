@@ -15,7 +15,6 @@ const Search = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -26,7 +25,6 @@ const Search = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Debounced API fetch for autocomplete as user types
   useEffect(() => {
     if (!searchInput.trim()) {
       setSuggestions([]);
@@ -36,7 +34,6 @@ const Search = () => {
 
     setLoading(true);
     
-    // Wait 300ms after user stops typing before making API call
     const timer = setTimeout(async () => {
       const results = await getAutocompleteSuggestions(searchInput);
       setSuggestions(results);
@@ -44,10 +41,9 @@ const Search = () => {
       setLoading(false);
     }, 1000);
 
-    return () => clearTimeout(timer); // Clear timeout if user types again quickly
+    return () => clearTimeout(timer); 
   }, [searchInput]);
 
-  // Pressing Enter redirects to Results Page
   const handleSearch = (e) => {
     if (e.key === 'Enter' && searchInput.trim()) {
       setShowDropdown(false);
@@ -64,7 +60,6 @@ const Search = () => {
           Search <span className="text-yellow-400">Movies & TV Shows</span>
         </h1>
 
-        {/* SEARCH INPUT CONTAINER */}
         <div className="relative w-full max-w-2xl" ref={dropdownRef}>
           <div className="relative flex items-center">
             <input 
@@ -84,11 +79,9 @@ const Search = () => {
             )}
           </div>
 
-          {/* AUTOCOMPLETE DROPDOWN */}
           {showDropdown && suggestions.length > 0 && (
             <div className="absolute left-0 right-0 top-full mt-2 bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-96 overflow-y-auto animate-fadeIn">
               {suggestions.map((item, index) => {
-                // Extract clean thumbnail poster URL
                 const rawPoster = typeof item.primaryImage === 'string' 
                   ? item.primaryImage 
                   : item.primaryImage?.url || item.thumbnails?.[0]?.url;
@@ -105,7 +98,7 @@ const Search = () => {
                   <div
                     key={item.id || index}
                     onClick={() => {
-                      setSelectedMovie(item); // Open Modal instantly
+                      setSelectedMovie(item); 
                       setShowDropdown(false);
                     }}
                     className="flex items-center gap-4 p-3 hover:bg-gray-800/80 transition-colors cursor-pointer border-b border-gray-800/60 last:border-0"
@@ -141,7 +134,7 @@ const Search = () => {
             </div>
           )}
 
-          {/* NO RESULTS FOUND STATE */}
+          
           {showDropdown && !loading && suggestions.length === 0 && searchInput.trim() !== '' && (
             <div className="absolute left-0 right-0 top-full mt-2 bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl p-4 text-center text-gray-400 text-sm z-50">
               No movies found matching "{searchInput}"
@@ -150,7 +143,6 @@ const Search = () => {
         </div>
       </div>
 
-      {/* RENDER MOVIE DETAILS MODAL INSTANTLY ON SUGGESTION CLICK */}
       {selectedMovie && (
         <MovieDetails 
           movieData={selectedMovie} 
