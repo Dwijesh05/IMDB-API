@@ -19,7 +19,6 @@ const LogIn = () => {
     
     const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
 
-r
     const user = registeredUsers.find(
       (u) => u.email === email && u.password === password
     );
